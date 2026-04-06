@@ -1,0 +1,30 @@
+# Virtual Environments
+venv/
+env/
+.env
+
+# Python Cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDE and Project Settings
+.vscode/
+.idea/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# Datasets and Large Outputs
+dataset/
+outputs/models/
+outputs/plots/
+outputs/results/
+*.pth
+*.pt
+*.h5
+
+# OS Generated Files
+.DS_Store
+Thumbs.db
+Desktop.ini
