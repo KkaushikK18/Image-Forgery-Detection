@@ -24,3 +24,4 @@ ipykernel>=6.22.0
 
 # User Interface
 streamlit>=1.24.0
+plotly>=5.19.0

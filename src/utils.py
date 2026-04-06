@@ -21,7 +21,7 @@ import seaborn as sns
 import torch
 import torch.nn.functional as F
 from torchvision import transforms
-from PIL import Image
+from PIL import Image, ExifTags
 import cv2
 
 
@@ -391,3 +391,67 @@ def mixup_criterion(criterion, pred, y_a, y_b, lam):
     """
     return lam * criterion(pred, y_a) + (1 - lam) * criterion(pred, y_b)
 
+
+# ────────────────────────────────────────────────────────────
+# 9.  EXIF Metadata Analysis
+# ────────────────────────────────────────────────────────────
+
+def analyze_exif(image: Image.Image):
+    """
+    Extracts EXIF metadata and checks for common forgery signatures.
+    Returns:
+        dict: Raw EXIF data with human-readable tags
+        list: Warnings/anomalies found in the metadata
+    """
+    exif_data = image.getexif()
+    if not exif_data:
+        return {}, ["No EXIF metadata found. This is common if the image was downloaded from social media (which strips EXIF), but could also indicate deliberate metadata wiping."]
+        
+    readable_exif = {}
+    warnings = []
+    
+    # Process standard EXIF tags
+    for tag_id, value in exif_data.items():
+        tag_name = ExifTags.TAGS.get(tag_id, tag_id)
+        # Avoid displaying huge binary chunks
+        if isinstance(value, bytes):
+            if len(value) > 64:
+                value = f"<binary data: {len(value)} bytes>"
+            else:
+                try:
+                    value = value.decode("utf-8", errors="ignore")
+                except Exception:
+                    value = "<undecodable bytes>"
+        readable_exif[tag_name] = value
+
+    # Process IFD (Image File Directory) EXIF tags
+    try:
+        ifd = image.getexif().get_ifd(ExifTags.IFD.Exif)
+        for tag_id, value in ifd.items():
+            tag_name = ExifTags.TAGS.get(tag_id, tag_id)
+            if isinstance(value, bytes):
+                if len(value) > 64:
+                    value = f"<binary data: {len(value)} bytes>"
+                else:
+                    try:
+                        value = value.decode("utf-8", errors="ignore")
+                    except Exception:
+                        value = "<undecodable bytes>"
+            readable_exif[f"EXIF_{tag_name}"] = value
+    except Exception:
+        pass
+
+    # Deep Analysis for Forgery Indicators
+    software = str(readable_exif.get("Software", "")).lower()
+    suspicious_software = ["photoshop", "gimp", "lightroom", "paint", "canva", "snapseed"]
+    if any(keyword in software for keyword in suspicious_software):
+        warnings.append(f"Image was edited with a known image manipulation suite: {readable_exif.get('Software')}")
+
+    # Check Date modification vs Origination
+    datetime_orig = readable_exif.get("EXIF_DateTimeOriginal", readable_exif.get("DateTimeOriginal", ""))
+    datetime_mod = readable_exif.get("DateTime", "")
+    
+    if datetime_orig and datetime_mod and (datetime_orig != datetime_mod):
+        warnings.append(f"Modification date ({datetime_mod}) differs from the original creation date ({datetime_orig}).")
+        
+    return readable_exif, warnings
