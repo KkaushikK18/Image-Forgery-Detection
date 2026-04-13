@@ -2,7 +2,6 @@
 
 [![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python)](https://www.python.org/)
 [![PyTorch](https://img.shields.io/badge/PyTorch-2.0%2B-EE4C2C?logo=pytorch)](https://pytorch.org/)
-[![License](https://img.shields.io/badge/License-MIT-green)](LICENSE)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Deployed-FF4B4B?logo=streamlit)](https://streamlit.io/)
 [![Accuracy](https://img.shields.io/badge/Test%20Accuracy-84.39%25-brightgreen)]()
 [![Recall](https://img.shields.io/badge/Forged%20Recall-89.26%25-brightgreen)]()
