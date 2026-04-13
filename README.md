@@ -9,11 +9,6 @@
 
 > A deep learning system that detects manipulated images using a dual-stream ResNet-50 CNN with Error Level Analysis (ELA) preprocessing and Grad-CAM visual explanations — achieving **84.39% accuracy** and **89.26% recall** on forged images.
 
-**Authors:** Kaushik Kumar (23BPS1077) · Akash Singh (23BPS1031) · Prajjwal Saggar (23BPS1057)  
-**Institution:** School of Computer Science and Engineering, Vellore Institute of Technology, Chennai
-
----
-
 ## 📋 Table of Contents
 
 - [Overview](#-overview)
